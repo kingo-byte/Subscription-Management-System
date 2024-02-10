@@ -11,5 +11,7 @@ namespace BAL.IServices
     public interface IUserService
     {
         public User AddUser(User user);
+
+        public User CheckUser(User user);
     }
 }

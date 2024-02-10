@@ -2,6 +2,10 @@ using BAL.IServices;
 using DAL.Repository.Models;
 using DAL.Repository.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace Subscription_Management_System.Controllers
@@ -12,14 +16,48 @@ namespace Subscription_Management_System.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
-
+        private readonly IConfiguration _configuration;
         public UserController(
             ILogger<UserController> logger,
-            IUserService userService
+            IUserService userService,
+            IConfiguration configuration
             )
         {
             _logger = logger;
             _userService = userService;
+            _configuration = configuration;
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login(SignInDTO request)
+        {
+            try 
+            {
+                User user = new User()
+                {
+                    UserName = request.UserName
+                };
+
+                User checkUser = _userService.CheckUser(user);
+
+                if (checkUser == null)
+                {
+                    return BadRequest("Invalid Email or Password");
+                }
+
+                if (!VerifyPasswordHash(request.Password, checkUser.PasswordHash, checkUser.PasswordSalt))
+                {
+                    return BadRequest("Invalid Email or Password");
+                }
+
+                string token = CreateToken(checkUser);
+
+                return Ok(token);
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("Register")]
@@ -69,6 +107,27 @@ namespace Subscription_Management_System.Controllers
 
                 return computedHash.SequenceEqual(passwordHash);
             }
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds);
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
     }
 }

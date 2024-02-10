@@ -27,5 +27,13 @@ namespace BAL.Services
 
             return newUser;
         }
+
+        public User CheckUser(User user)
+        {
+            User foundUser = _db.Users
+               .FirstOrDefault(u => u.UserName.Equals(user.UserName))!;
+
+            return foundUser;
+        }
     }
 }
