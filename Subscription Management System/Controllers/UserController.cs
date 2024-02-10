@@ -25,24 +25,31 @@ namespace Subscription_Management_System.Controllers
         [HttpPost("Register")]
         public IActionResult Register(SignUpDto request)
         {
-            if (!ModelState.IsValid)
+            try 
             {
-                return BadRequest("Invalid User");
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid User");
+                }
+
+                CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                User user = new User()
+                {
+                    UserName = request.UserName,
+                    Email = request.Email,
+                    PasswordHash = passwordHash,
+                    PasswordSalt = passwordSalt,
+                    DateOfBirth = request.DateOfBirth,
+                    Nationality = request.Nationality
+                };
+
+                return Ok(_userService.AddUser(user));
             }
-
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            User user = new User()
+            catch (Exception ex) 
             {
-                UserName = request.UserName,
-                Email = request.Email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                DateOfBirth = request.DateOfBirth,
-                Nationality = request.Nationality
-            };
-
-            return Ok(_userService.AddUser(user));
+                return StatusCode(500, ex.Message);
+            }
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
