@@ -1,3 +1,5 @@
+using DAL.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<SubscriptionManagementDbConext>
+    (options => options.UseNpgsql(builder.Configuration.GetConnectionString("SMSConnection")));
 
 var app = builder.Build();
 
