@@ -10,5 +10,7 @@ namespace BAL.IServices
     public interface ISubscriptionService 
     {
         public List<Subscription> GetActiveSubscriptions(int userId);
+
+        public int GetRemainingDays(int susubscriptionId);
     }
 }

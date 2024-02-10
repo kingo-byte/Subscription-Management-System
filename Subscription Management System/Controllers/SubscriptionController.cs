@@ -1,4 +1,5 @@
 ﻿using BAL.IServices;
+using DAL.Repository.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +17,6 @@ namespace Subscription_Management_System.Controllers
             _subscriptionService = subscriptionService;
         }
 
-        //public 
-
         [HttpGet]
         [Authorize]
         public IActionResult GetActiveSubscriptions(int userId) 
@@ -34,6 +33,20 @@ namespace Subscription_Management_System.Controllers
             }
         }
 
+        [HttpGet("GetRemainingDays")]
+        [Authorize]
+        public IActionResult GetRemainingDays(int id) 
+        {
+            try
+            {
+                var response = _subscriptionService.GetRemainingDays(id);
 
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

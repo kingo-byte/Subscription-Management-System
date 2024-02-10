@@ -1,4 +1,5 @@
 ﻿using BAL.IServices;
+using DAL.Repository;
 using DAL.Repository.DbAccess;
 using DAL.Repository.Models;
 using System;
@@ -12,13 +13,25 @@ namespace BAL.Services
     public class SubscriptionService : ISubscriptionService
     {
         private readonly DbAccess _dbAccess;
-        public SubscriptionService(DbAccess dbAccess) 
+        private readonly SubscriptionManagementDbConext _db;
+        public SubscriptionService(DbAccess dbAccess, SubscriptionManagementDbConext db)
         {
-            _dbAccess = dbAccess;   
-        }    
+            _dbAccess = dbAccess;
+            _db = db;
+        }
+
         public List<Subscription> GetActiveSubscriptions(int userId)
         {
-            return _dbAccess.GetSubscriptions(userId);
+            return _dbAccess.GetActiveSubscriptions(userId);
+        }
+
+        public int GetRemainingDays(int subscriptionId) 
+        {
+            var response = _db.Subscriptions.Find(subscriptionId);
+
+            int remainingDays = (int)(response!.EndDate - response.StartDate).TotalDays;
+
+            return remainingDays;
         }
     }
 }

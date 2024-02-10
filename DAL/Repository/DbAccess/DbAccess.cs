@@ -20,7 +20,7 @@ namespace DAL.Repository.DbAccess
             _conn = configuration.GetConnectionString("SMSConnection");
         }
 
-        public List<Subscription> GetSubscriptions(int userId)
+        public List<Subscription> GetActiveSubscriptions(int userId)
         {
             string procedureName = "getsubscriptions";
 
