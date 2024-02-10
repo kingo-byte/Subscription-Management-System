@@ -1,3 +1,5 @@
+using BAL.IServices;
+using BAL.Services;
 using DAL.Repository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<SubscriptionManagementDbConext>
     (options => options.UseNpgsql(builder.Configuration.GetConnectionString("SMSConnection")));
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
