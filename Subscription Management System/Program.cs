@@ -8,6 +8,7 @@ using System;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Swashbuckle.AspNetCore.Filters;
+using DAL.Repository.DbAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,8 @@ builder.Services.AddDbContext<SubscriptionManagementDbConext>
     (options => options.UseNpgsql(builder.Configuration.GetConnectionString("SMSConnection")));
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddTransient<DbAccess>();
 
 var app = builder.Build();
 
