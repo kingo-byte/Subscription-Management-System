@@ -47,6 +47,7 @@ builder.Services.AddDbContext<SubscriptionManagementDbConext>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddTransient<DbAccess>();
 
 var app = builder.Build();

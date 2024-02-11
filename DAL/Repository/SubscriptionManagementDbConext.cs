@@ -20,5 +20,7 @@ namespace DAL.Repository
         public DbSet<Subscription> Subscriptions { get; set; }
 
         public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
+
+        public DbSet<Logging> Logging { get; set; }
     }
 }

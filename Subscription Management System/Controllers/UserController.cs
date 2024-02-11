@@ -14,19 +14,19 @@ namespace Subscription_Management_System.Controllers
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
-    {
-        private readonly ILogger<UserController> _logger;
+    {        
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
-        public UserController(
-            ILogger<UserController> logger,
+        private readonly ILoggingService _log;
+        public UserController(            
             IUserService userService,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ILoggingService log
             )
-        {
-            _logger = logger;
+        {            
             _userService = userService;
             _configuration = configuration;
+            _log = log;
         }
 
         [HttpPost("login")]
@@ -34,6 +34,8 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request Login is sent with {request}");
+
                 User user = new User()
                 {
                     UserName = request.UserName
@@ -53,10 +55,13 @@ namespace Subscription_Management_System.Controllers
 
                 string token = CreateToken(checkUser);
 
+                _log.Log($"token {token} is generated");
+
                 return Ok(token);
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -87,6 +92,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+
                 return StatusCode(500, ex.Message);
             }
         }
