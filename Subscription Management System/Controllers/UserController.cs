@@ -3,9 +3,11 @@ using BAL.IServices;
 using DAL.Repository.Models;
 using DAL.Repository.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Subscription_Management_System.RetryMechanism;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -19,6 +21,7 @@ namespace Subscription_Management_System.Controllers
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
         private readonly ILoggingService _log;
+        private int _maxAttemps;
         public UserController(            
             IUserService userService,
             IConfiguration configuration,
@@ -26,8 +29,9 @@ namespace Subscription_Management_System.Controllers
             )
         {            
             _userService = userService;
-            _configuration = configuration;
+            _configuration = configuration; 
             _log = log;
+            _maxAttemps = int.Parse(_configuration.GetSection("AppSettings:MaxAttempts").Value);
         }
 
         [HttpPost("login")]
@@ -35,6 +39,15 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                if (HttpContext.Session.GetInt32("LoginAttemps") != null)
+                {
+                    HttpContext.Session.SetInt32("LoginAttemps", HttpContext.Session.GetInt32("LoginAttemps").Value - 1);
+                }
+                else 
+                {
+                    HttpContext.Session.SetInt32("LoginAttemps", _maxAttemps - 1);
+                }
+
                 _log.Log($"Request Login is sent with {request}");
 
                 User user = new User()
@@ -42,7 +55,9 @@ namespace Subscription_Management_System.Controllers
                     UserName = request.UserName
                 };
 
-                User checkUser = _userService.CheckUser(user);
+                int? remainingAttempts = HttpContext.Session.GetInt32("LoginAttemps");
+
+                User checkUser = RetryPolicy.ExecuteWithRetry(() => _userService.CheckUser(user), remainingAttempts.Value);
 
                 if (checkUser == null)
                 {
