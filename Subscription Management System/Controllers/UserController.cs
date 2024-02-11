@@ -1,3 +1,4 @@
+using Azure.Core;
 using BAL.IServices;
 using DAL.Repository.Models;
 using DAL.Repository.Models.DTOs;
@@ -71,6 +72,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request Register is sent with {request}");
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid User");
@@ -87,12 +89,12 @@ namespace Subscription_Management_System.Controllers
                     DateOfBirth = request.DateOfBirth,
                     Nationality = request.Nationality
                 };
-
+                _log.Log($"User {user} is created");
                 return Ok(_userService.AddUser(user));
             }
             catch (Exception ex)
             {
-
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -103,6 +105,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request UpdateUser is sent with {user}");
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid User");
@@ -112,6 +115,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -122,11 +126,13 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request RemoveUser is sent with ID {id}");
                 var response = _userService.RemoveUser(id);
                 return Ok(response);
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }

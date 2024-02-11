@@ -1,4 +1,5 @@
-﻿using BAL.IServices;
+﻿using Azure.Core;
+using BAL.IServices;
 using DAL.Repository.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,9 +13,11 @@ namespace Subscription_Management_System.Controllers
     public class SubscriptionController : ControllerBase
     {
         private readonly ISubscriptionService _subscriptionService;
-        public SubscriptionController(ISubscriptionService subscriptionService)
+        private readonly ILoggingService _log;
+        public SubscriptionController(ISubscriptionService subscriptionService, ILoggingService log)
         {
             _subscriptionService = subscriptionService;
+            _log = log;
         }
 
         [HttpGet("GetActiveSubscriptions")]
@@ -23,12 +26,14 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request GetActiveSubscriptions is sent with ID {userId}");
                 var response = _subscriptionService.GetActiveSubscriptions(userId);
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -39,6 +44,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request GetRemainingDays is sent with ID {id}");
                 var response = _subscriptionService.GetRemainingDays(id);
 
                 if (response == -1)
@@ -50,6 +56,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -60,6 +67,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request AddSubscription is sent with {subscription}");
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid subscription");
@@ -71,6 +79,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -81,6 +90,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request RemoveSubscription is sent with ID {id}");
                 bool response = _subscriptionService.RemoveSubscription(id);
 
                 if (response)
@@ -92,6 +102,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -102,6 +113,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request DeactivateSubscription is sent with ID {id}");
                 bool response = _subscriptionService.DeactivateSubscription(id);
 
                 if (response)
@@ -113,6 +125,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -123,6 +136,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request ActivateSubscription is sent with ID {id}");
                 bool response = _subscriptionService.ActivateSubscription(id);
 
                 if (response)
@@ -134,6 +148,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -144,6 +159,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                _log.Log($"Request UpdateSubscription is sent with {subscription}");
                 var response = _subscriptionService.UpdateSubscription(subscription);
 
                 if (response != null)
@@ -154,6 +170,7 @@ namespace Subscription_Management_System.Controllers
             }
             catch (Exception ex)
             {
+                _log.Log($"Error: {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
         }
