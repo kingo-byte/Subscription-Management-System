@@ -23,6 +23,8 @@ namespace DAL.Repository.Models
         [ForeignKey("SubscriptionType")]
         public int SubscriptionTypeId { get;set; }
 
+        public bool? IsActive { get; set; } 
+
         public virtual User? User { get; set; }
 
         public virtual SubscriptionType? SubscriptionType { get; set; }

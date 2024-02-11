@@ -22,10 +22,10 @@ namespace DAL.Repository.Models
         public string Email { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public byte[] PasswordHash { get; set; }
+        public byte[]? PasswordHash { get; set; }
 
         [JsonIgnore]
-        public byte[] PasswordSalt { get; set; }
+        public byte[]? PasswordSalt { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
 

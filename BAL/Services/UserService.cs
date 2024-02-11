@@ -2,6 +2,7 @@
 using DAL.Repository;
 using DAL.Repository.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,45 @@ namespace BAL.Services
                .FirstOrDefault(u => u.UserName.Equals(user.UserName))!;
 
             return foundUser;
+        }
+
+        public bool RemoveUser(int id) {
+            var foundUser = _db.Users.Find(id);
+
+            if (foundUser != null)
+            {
+                _db.Users.Remove(foundUser);
+                _db.SaveChanges();
+                return true;
+            }
+
+            return false;
+        }
+
+        public User UpdateUser(User user)
+        {
+            if (user != null)
+            {
+                var foundUser = _db.Users.Find(user.Id);
+
+                if (foundUser != null)
+                {
+                   
+                    foundUser.UserName = user.UserName;
+                    foundUser.Email = user.Email;
+                    foundUser.DateOfBirth = user.DateOfBirth;
+                    foundUser.Nationality = user.Nationality;
+
+                    _db.Entry(foundUser).State = EntityState.Modified;
+
+                    _db.SaveChanges();
+
+                    return foundUser;
+                }
+                
+            }
+            return user!;
+            
         }
     }
 }

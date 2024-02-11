@@ -1,6 +1,7 @@
 using BAL.IServices;
 using DAL.Repository.Models;
 using DAL.Repository.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -31,7 +32,7 @@ namespace Subscription_Management_System.Controllers
         [HttpPost("login")]
         public IActionResult Login(SignInDTO request)
         {
-            try 
+            try
             {
                 User user = new User()
                 {
@@ -54,7 +55,7 @@ namespace Subscription_Management_System.Controllers
 
                 return Ok(token);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -63,7 +64,7 @@ namespace Subscription_Management_System.Controllers
         [HttpPost("Register")]
         public IActionResult Register(SignUpDto request)
         {
-            try 
+            try
             {
                 if (!ModelState.IsValid)
                 {
@@ -84,7 +85,41 @@ namespace Subscription_Management_System.Controllers
 
                 return Ok(_userService.AddUser(user));
             }
-            catch (Exception ex) 
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateUser")]
+        [Authorize]
+        public IActionResult UpdateUser(User user)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid User");
+                }
+                var response = _userService.UpdateUser(user);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("RemoveUser")]
+        [Authorize]
+        public IActionResult RemoveUser(int id)
+        {
+            try
+            {
+                var response = _userService.RemoveUser(id);
+                return Ok(response);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -129,5 +164,6 @@ namespace Subscription_Management_System.Controllers
 
             return jwt;
         }
+
     }
 }

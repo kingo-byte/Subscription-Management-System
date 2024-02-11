@@ -13,5 +13,7 @@ namespace BAL.IServices
         public User AddUser(User user);
 
         public User CheckUser(User user);
+        public bool RemoveUser(int id);
+        public User UpdateUser(User user);
     }
 }
