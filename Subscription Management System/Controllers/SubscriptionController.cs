@@ -41,6 +41,11 @@ namespace Subscription_Management_System.Controllers
             {
                 var response = _subscriptionService.GetRemainingDays(id);
 
+                if (response == -1) 
+                {
+                    return BadRequest("Subscription was not found");
+                }
+
                 return Ok(response);
             }
             catch (Exception ex)

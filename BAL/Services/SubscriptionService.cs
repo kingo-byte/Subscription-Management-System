@@ -29,9 +29,14 @@ namespace BAL.Services
         {
             var response = _db.Subscriptions.Find(subscriptionId);
 
-            int remainingDays = (int)(response!.EndDate - response.StartDate).TotalDays;
+            if(response == null) 
+            {
+                int remainingDays = (int)(response!.EndDate - response.StartDate).TotalDays;
 
-            return remainingDays;
+                return remainingDays;
+            }
+
+            return -1;
         }
     }
 }
