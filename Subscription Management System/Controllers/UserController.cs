@@ -87,6 +87,7 @@ namespace Subscription_Management_System.Controllers
         {
             try
             {
+                //asdad
                 _log.Log($"Request Register is sent with {request}");
                 if (!ModelState.IsValid)
                 {
